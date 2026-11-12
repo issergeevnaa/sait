@@ -184,3 +184,35 @@
                         <p class="price">Итого: ${order.totalPrice} ₽</p>
                         ${!isDone ? `<button class="btn-done" onclick="markAsDone('${id}')">Отметить выполненным</button>` : ""}
                     `;
+                    ordersList.appendChild(card);
+});
+if (hasNewOrder && soundEnabled) {
+playNotificationSound();
+}
+isInitialLoad = false;
+});
+}
+if (sessionStorage.getItem("kiniro_admin_auth") === "true") {
+startAdminPanel();
+}
+loginForm.addEventListener("submit", (e) => {
+e.preventDefault();
+const enteredPass = document.getElementById("admin-password").value;
+if (enteredPass === ADMIN_PASSWORD) {
+sessionStorage.setItem("kiniro_admin_auth", "true");
+soundEnabled = true;
+playNotificationSound();
+enableSoundBtn.textContent = "🔔 Звук уведомлений активен";
+enableSoundBtn.classList.add("active");
+testSoundBtn.style.display = "inline-block";
+startAdminPanel();
+} else {
+loginError.textContent = "Неверный пароль! Попробуйте еще раз.";
+}
+});
+window.markAsDone = async (orderId) => {
+const orderRef = doc(db, "orders", orderId);
+await updateDoc(orderRef, { status: "Выполнен" });
+};
+
+
