@@ -31,7 +31,7 @@ button { cursor: pointer; border: none; padding: 10px 15px; border-radius: 8px; 
 .btn-primary:hover { background: #c0392b; }
 .btn-done { background: #0984e3; color: white; }
 
-/* Корзина (закреплена при прокрутке на ПК) */
+/* Корзина */
 .cart-box { flex: 1; min-width: 300px; background: white; padding: 18px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); position: sticky; top: 20px; }
 #cart-items { list-style: none; margin: 15px 0; max-height: 300px; overflow-y: auto; }
 #cart-items li { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 14px; gap: 8px; }
@@ -42,7 +42,7 @@ button { cursor: pointer; border: none; padding: 10px 15px; border-radius: 8px; 
 
 form input, form select { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
 
-/* Стили для админки */
+/* Админка */
 .orders-grid { width: 100%; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 15px; }
 .order-card { background: white; padding: 16px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 5px solid #d63031; }
 .order-card.completed { border-left-color: #00b894; opacity: 0.65; }
