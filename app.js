@@ -1,7 +1,7 @@
 import { initializeApp } from "https://gstatic.com";
 import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, updateDoc } from "https://gstatic.com";
 
-// ВАШИ КЛЮЧИ ИЗ FIREBASE (УЖЕ ПОДКЛЮЧЕНЫ)
+// ВАШИ КЛЮЧИ ОТ FIREBASE (УЖЕ ВПИСАНЫ)
 const firebaseConfig = {
     apiKey: "AIzaSyBXEQJjxAKOZ3S43vTYBEvxfTf6ETnAShE",
     authDomain: "://firebaseapp.com",
@@ -166,8 +166,7 @@ const menuData = [
     { id: 138, name: "Картофель фри", price: 120, cat: "snacks" },
     { id: 139, name: "Картофель по-деревенски", price: 140, cat: "snacks" },
     { id: 140, name: "Наггетсы", price: 150, cat: "snacks" },
-    { id: 141, name: "Эби фрай", price: 320, cat: "snacks" 
-    // --- СОУСЫ И ДОБАВКИ ---
+    { id: 141, name: "Эби фрай", price: 320, cat: "snacks" },
 { id: 142, name: "Имбирь", price: 30, cat: "sauces" },
 { id: 143, name: "Спайси соус", price: 90, cat: "sauces" },
 { id: 144, name: "Унаги соус", price: 60, cat: "sauces" },
@@ -314,3 +313,4 @@ const orderRef = doc(db, "orders", orderId);
 await updateDoc(orderRef, { status: "Выполнен" });
 };
 }
+    // --- СОУСЫ И ДОБАВКИ ---
