@@ -1,7 +1,10 @@
 import { initializeApp } from "https://gstatic.com";
 import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, updateDoc } from "https://gstatic.com";
 
-// ВАШИ КЛЮЧИ ОТ FIREBASE (УЖЕ ВПИСАНЫ)
+// ПАРОЛЬ ДЛЯ ВХОДА В АДМИНКУ (МОЖЕТЕ ИЗМЕНИТЬ НА СВОЙ)
+const ADMIN_PASSWORD = "kiniro2026";
+
+// ВАШИ КЛЮЧИ ОТ FIREBASE
 const firebaseConfig = {
     apiKey: "AIzaSyBXEQJjxAKOZ3S43vTYBEvxfTf6ETnAShE",
     authDomain: "://firebaseapp.com",
@@ -167,6 +170,7 @@ const menuData = [
     { id: 139, name: "Картофель по-деревенски", price: 140, cat: "snacks" },
     { id: 140, name: "Наггетсы", price: 150, cat: "snacks" },
     { id: 141, name: "Эби фрай", price: 320, cat: "snacks" },
+// --- СОУСЫ И ДОБАВКИ ---
 { id: 142, name: "Имбирь", price: 30, cat: "sauces" },
 { id: 143, name: "Спайси соус", price: 90, cat: "sauces" },
 { id: 144, name: "Унаги соус", price: 60, cat: "sauces" },
@@ -291,26 +295,106 @@ renderMenu();
 // ==========================================
 const ordersList = document.getElementById("orders-list");
 if (ordersList) {
+const loginScreen = document.getElementById("login-screen");
+const adminPanel = document.getElementById("admin-panel");
+const loginForm = document.getElementById("login-form");
+const loginError = document.getElementById("login-error");
+const enableSoundBtn = document.getElementById("enable-sound-btn");
+const testSoundBtn = document.getElementById("test-sound-btn");
+let soundEnabled = false;
+let isInitialLoad = true;
+let knownOrderIds = new Set();
+// Генератор громкого двойного звонка через встроенный AudioContext
+function playNotificationSound() {
+try {
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+const ctx = new AudioCtx();
+const now = ctx.currentTime;
+[0, 0.25].forEach((delay, idx) => {
+const osc = ctx.createOscillator();
+const gain = ctx.createGain();
+osc.type = "sine";
+osc.frequency.setValueAtTime(idx === 0 ? 880 : 1174.66, now + delay); // Ноты Ля и Ре
+gain.gain.setValueAtTime(0.3, now + delay);
+gain.gain.exponentialRampToValueAtTime(0.01, now + delay + 0.3);
+osc.connect(gain);
+gain.connect(ctx.destination);
+osc.start(now + delay);
+osc.stop(now + delay + 0.35);
+});
+} catch (e) {
+console.error("Не удалось воспроизвести звук:", e);
+}
+}
+// Включение звука по клику администратора
+enableSoundBtn.addEventListener("click", () => {
+soundEnabled = true;
+playNotificationSound();
+enableSoundBtn.textContent = "🔔 Звук уведомлений активен";
+enableSoundBtn.classList.add("active");
+testSoundBtn.style.display = "inline-block";
+});
+testSoundBtn.addEventListener("click", () => {
+playNotificationSound();
+});
+// Функция запуска загрузки заказов после успешного входа
+function startAdminPanel() {
+loginScreen.style.display = "none";
+adminPanel.style.display = "block";
 const q = query(collection(db, "orders"), orderBy("timestamp", "desc"));
 onSnapshot(q, (snapshot) => {
 ordersList.innerHTML = "";
+let hasNewOrder = false;
 if (snapshot.empty) {
 ordersList.innerHTML = "Пока нет ни одного заказа.";
+isInitialLoad = false;
 return;
 }
 snapshot.forEach((docSnap) => {
 const order = docSnap.data();
 const id = docSnap.id;
+// Проверяем, появился ли новый заказ после открытия страницы
+if (!knownOrderIds.has(id)) {
+knownOrderIds.add(id);
+if (!isInitialLoad && order.status === "Новый") {
+hasNewOrder = true;
+}
+}
 const isDone = order.status === "Выполнен";
 const card = document.createElement("div");
 card.className = order-card ${isDone ? "completed" : ""};
 card.innerHTML = <h3>Заказ от ${order.createdAt}</h3> <p><strong>Статус:</strong> ${order.status}</p> <p><strong>Клиент:</strong> ${order.name}</p> <p><strong>Телефон:</strong> <a href="tel:${order.phone}">${order.phone}</a></p> <p><strong>Адрес:</strong> ${order.address}</p> <p><strong>Оплата:</strong> ${order.payment}</p> <div class="order-items"> <strong>Состав заказа:</strong><br> ${order.items.join("<br>")} </div> <p class="price">Итого: ${order.totalPrice} ₽</p> ${!isDone ?Отметить выполненным: ""};
 ordersList.appendChild(card);
 });
+if (hasNewOrder && soundEnabled) {
+playNotificationSound();
+}
+isInitialLoad = false;
+});
+}
+// Проверка, входил ли админ ранее в этой вкладке
+if (sessionStorage.getItem("kiniro_admin_auth") === "true") {
+startAdminPanel();
+}
+// Обработка формы ввода пароля
+loginForm.addEventListener("submit", (e) => {
+e.preventDefault();
+const enteredPass = document.getElementById("admin-password").value;
+if (enteredPass === ADMIN_PASSWORD) {
+sessionStorage.setItem("kiniro_admin_auth", "true");
+// Включаем звук сразу после клика на кнопку «Войти»
+soundEnabled = true;
+playNotificationSound();
+enableSoundBtn.textContent = "🔔 Звук уведомлений активен";
+enableSoundBtn.classList.add("active");
+testSoundBtn.style.display = "inline-block";
+startAdminPanel();
+} else {
+loginError.textContent = "Неверный пароль! Попробуйте еще раз.";
+}
 });
 window.markAsDone = async (orderId) => {
 const orderRef = doc(db, "orders", orderId);
 await updateDoc(orderRef, { status: "Выполнен" });
 };
 }
-    // --- СОУСЫ И ДОБАВКИ ---
