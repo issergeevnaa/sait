@@ -53,4 +53,3 @@ form input, form select { width: 100%; padding: 10px; margin-bottom: 10px; borde
 @media (max-width: 768px) {
     .container { flex-direction: column; }
     .cart-box { position: static; width: 100%; }
-}
